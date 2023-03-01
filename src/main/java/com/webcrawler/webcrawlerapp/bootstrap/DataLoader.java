@@ -39,12 +39,12 @@ public class DataLoader implements CommandLineRunner {
 
         PhoneNumber phoneNumber11 = new PhoneNumber();
         phoneNumber11.setPhoneNumber("0654377127");
-        phoneNumber11.setNumberOfHits(15);
+        phoneNumber11.setNumberOfHits("15");
         phoneNumber11.setUrl(url1);
 
         PhoneNumber phoneNumber12 = new PhoneNumber();
         phoneNumber12.setPhoneNumber("0612345678");
-        phoneNumber12.setNumberOfHits(2);
+        phoneNumber12.setNumberOfHits("2");
         phoneNumber12.setUrl(url1);
 
         Email email11 = new Email();
@@ -71,12 +71,12 @@ public class DataLoader implements CommandLineRunner {
 
         PhoneNumber phoneNumber21 = new PhoneNumber();
         phoneNumber21.setPhoneNumber("0612345678");
-        phoneNumber21.setNumberOfHits(2);
+        phoneNumber21.setNumberOfHits("2");
         phoneNumber21.setUrl(url2);
 
         PhoneNumber phoneNumber22 = new PhoneNumber();
         phoneNumber22.setPhoneNumber("0642390424");
-        phoneNumber22.setNumberOfHits(99);
+        phoneNumber22.setNumberOfHits("99");
         phoneNumber22.setUrl(url2);
 
         Email email21 = new Email();

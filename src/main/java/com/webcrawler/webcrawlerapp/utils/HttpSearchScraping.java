@@ -12,10 +12,10 @@ import java.util.stream.Collectors;
 
 import static com.webcrawler.webcrawlerapp.utils.Element.*;
 
-public class HttpSearch{
+public class HttpSearchScraping {
     private boolean findEmail = false;
     private boolean findTelephone = false;
-    private Set<String> emails = new HashSet<>();
+    private Map<String, Integer> emails = new HashMap<>();
     private Map<String, Integer> telephones = new HashMap<>();
     private Set<String> urlsToHttpCrawl = new HashSet<>();
     private List<Url> urlResultList = new ArrayList<>();
@@ -151,7 +151,7 @@ public class HttpSearch{
                 PhoneNumber phoneNumber = new PhoneNumber();
                 phoneNumber.setUrl(url);
                 phoneNumber.setPhoneNumber(singlePhoneNumber.getKey());
-                phoneNumber.setNumberOfHits(singlePhoneNumber.getValue());
+                phoneNumber.setNumberOfHits(singlePhoneNumber.getValue().toString());
 
                 phoneNumberSet.add(phoneNumber);
             }
@@ -159,13 +159,14 @@ public class HttpSearch{
 
         Set<Email> emailSet = new HashSet<>();
         if (!getEmails().isEmpty()) {
-            getEmails().forEach(e -> {
+            for (Map.Entry<String, Integer> singleEmail : getEmails().entrySet()) {
                 Email email = new Email();
                 email.setUrl(url);
-                email.setEmail(e);
+                email.setEmail(singleEmail.getKey());
+                email.setNumberOfHits(singleEmail.getValue().toString());
 
                 emailSet.add(email);
-            });
+            }
         }
 
         url.getPhoneNumber().addAll(phoneNumberSet);
@@ -240,9 +241,10 @@ public class HttpSearch{
                 "[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.(?:nl|com|be)|"
         ).matcher(truncatedHTML);
         while (m.find()) {
-            if (m.group() != "") {
-                System.out.println("found email: " + m.group());
-                getEmails().add(m.group());
+            if (!Objects.equals(m.group(), "")) {
+                String foundEmail = m.group();
+                getEmails().computeIfPresent(foundEmail, (k, v) -> v + 1);
+                getEmails().putIfAbsent(foundEmail, 1);
             }
         }
     }
@@ -319,7 +321,7 @@ public class HttpSearch{
         this.findTelephone = findTelephone;
     }
 
-    public Set<String> getEmails() {
+    public Map<String, Integer> getEmails() {
         return emails;
     }
 

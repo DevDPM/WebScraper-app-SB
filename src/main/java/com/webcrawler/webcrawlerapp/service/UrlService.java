@@ -8,8 +8,7 @@ import java.util.UUID;
 
 public interface UrlService {
 
-    List<Url> listUrlByKeyword(Keyword keyword);
-
     Url getUrlById(UUID id);
 
+    void deleteByIdAndKeywordId(UUID urlId, UUID keywordId);
 }

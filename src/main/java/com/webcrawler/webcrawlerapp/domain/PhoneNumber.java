@@ -16,7 +16,7 @@ import java.util.UUID;
 public class PhoneNumber extends BaseEntity {
 
     private String phoneNumber;
-    private Integer numberOfHits;
+    private String numberOfHits;
 
     @JsonBackReference
     @ManyToOne
@@ -24,7 +24,7 @@ public class PhoneNumber extends BaseEntity {
     private Url url;
 
     @Builder
-    public PhoneNumber(UUID id, String phoneNumber, Integer numberOfHits, Url url) {
+    public PhoneNumber(UUID id, String phoneNumber, String numberOfHits, Url url) {
         super(id);
         this.phoneNumber = phoneNumber;
         this.numberOfHits = numberOfHits;

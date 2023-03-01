@@ -1,12 +1,7 @@
 package com.webcrawler.webcrawlerapp.service;
 
-import com.webcrawler.webcrawlerapp.domain.Email;
 import com.webcrawler.webcrawlerapp.domain.Keyword;
-import com.webcrawler.webcrawlerapp.domain.PhoneNumber;
-import com.webcrawler.webcrawlerapp.domain.Url;
 import com.webcrawler.webcrawlerapp.repository.KeywordRepository;
-import com.webcrawler.webcrawlerapp.utils.HttpSearch;
-import com.webcrawler.webcrawlerapp.utils.WebSearch;
 import org.springframework.stereotype.Service;
 
 import java.util.*;

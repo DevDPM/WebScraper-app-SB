@@ -16,6 +16,7 @@ import java.util.UUID;
 public class Email extends BaseEntity{
 
     private String email;
+    private String numberOfHits;
 
     @JsonBackReference
     @ManyToOne
@@ -23,9 +24,10 @@ public class Email extends BaseEntity{
     private Url url;
 
     @Builder
-    public Email(UUID id, String email, Url url) {
+    public Email(UUID id, String email, String numberOfHits, Url url) {
         super(id);
         this.email = email;
         this.url = url;
+        this.numberOfHits = numberOfHits;
     }
 }

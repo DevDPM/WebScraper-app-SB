@@ -20,9 +20,12 @@ import java.util.UUID;
 public class Keyword extends BaseEntity{
 
     private String keyword;
+    private boolean googleSearch;
+    private boolean bingSearch;
+    private int numberOfPages;
 
     @JsonManagedReference
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "keyword")
+    @OneToMany(cascade = CascadeType.PERSIST, mappedBy = "keyword", orphanRemoval = true)
     private List<Url> urls = new ArrayList<>();
 
     @Builder
@@ -30,5 +33,9 @@ public class Keyword extends BaseEntity{
         super(id);
         this.keyword = keyword;
         this.urls = urls;
+    }
+
+    public void removeUrl(Url url) {
+        urls.remove(url);
     }
 }

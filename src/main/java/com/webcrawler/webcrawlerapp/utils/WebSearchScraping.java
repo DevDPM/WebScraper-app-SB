@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 import static com.webcrawler.webcrawlerapp.utils.Element.*;
 
 
-public class WebSearch {
+public class WebSearchScraping {
 
     public enum Engine {
         GOOGLE,
@@ -25,7 +25,7 @@ public class WebSearch {
     private boolean bingSearch;
     private Set<Engine> engines;
 
-    public WebSearch() {
+    public WebSearchScraping() {
         this.urlList = new HashSet<>();
         this.googleSearch = false;
         this.bingSearch = false;
