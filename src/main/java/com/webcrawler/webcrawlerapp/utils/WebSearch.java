@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 import static com.webcrawler.webcrawlerapp.utils.Element.*;
 
+
 public class WebSearch {
 
     public enum Engine {
@@ -44,7 +45,7 @@ public class WebSearch {
         this.bingSearch = setBing;
     }
 
-    public void start() throws IOException {
+    public void start() {
 
         addSearchEngines();
 
@@ -53,13 +54,13 @@ public class WebSearch {
             return;
         }
 
-
         for (Engine engine : engines) {
-            System.out.println("Start searching in: " +engine.toString());
+            System.out.println("Start searching in: " + engine.toString());
             WebDocument document = new WebDocument();
 
             SearchEngineFactory sef = new SearchEngineFactory();
             SearchEngine searchEngine = sef.getSearchEngine(engine);
+
 
             if (getKeyword() == "" ||
                     getKeyword() == null ||
@@ -69,7 +70,12 @@ public class WebSearch {
 
             String searchUrl = searchEngine.getSearchUrl(getKeyword(), getNumberOfHttpPages());
 
-            document.crawlUrl(searchUrl);
+            try {
+                document.crawlUrl(searchUrl);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
             Element.setWebDocument(document);
 
             List<String> foundUrls = Element.getElementListFromElementHTML(Tag.HYPER_LINK, Tag.HTML).stream()
@@ -79,10 +85,9 @@ public class WebSearch {
                     })
                     .collect(Collectors.toList());
 
-
             addFoundUrlsToUrlList(searchEngine.subtractHttpDomain(foundUrls));
-            System.out.println("Searching completed.");
         }
+        return;
     }
 
     private boolean addFoundUrlsToUrlList(Set<String> foundUrls) {

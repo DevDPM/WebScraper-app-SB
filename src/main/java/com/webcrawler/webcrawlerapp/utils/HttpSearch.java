@@ -1,5 +1,9 @@
 package com.webcrawler.webcrawlerapp.utils;
 
+import com.webcrawler.webcrawlerapp.domain.Email;
+import com.webcrawler.webcrawlerapp.domain.PhoneNumber;
+import com.webcrawler.webcrawlerapp.domain.Url;
+
 import java.io.IOException;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -8,19 +12,14 @@ import java.util.stream.Collectors;
 
 import static com.webcrawler.webcrawlerapp.utils.Element.*;
 
-public class HttpSearch {
-    private boolean findEmail;
-    private boolean findTelephone;
-    private Set<String> emails;
-    private Map<String, Integer> telephones;
-    private Set<String> urlSet;
-    private Set<String> urlChilds;
+public class HttpSearch{
+    private boolean findEmail = false;
+    private boolean findTelephone = false;
+    private Set<String> emails = new HashSet<>();
+    private Map<String, Integer> telephones = new HashMap<>();
+    private Set<String> urlsToHttpCrawl = new HashSet<>();
+    private List<Url> urlResultList = new ArrayList<>();
 
-
-    // for result display purpose
-    private List<String> resultUrls;
-    private List<Set<String>> resultEmails;
-    private List<Map<String, Integer>> resultTelephones;
 
     private final String[] FILTERLIST = {
             "=", "google", "bing", "youtube", "facebook",
@@ -34,51 +33,38 @@ public class HttpSearch {
             "06", "+31", "020", "085", "0343", "0299"
     };
 
-    public HttpSearch() {
-        this.findEmail = false;
-        this.findTelephone = false;
-        this.emails = new HashSet<>();
-        this.telephones = new HashMap<>();
-        this.urlSet = new HashSet<>();
-        this.urlChilds = new HashSet<>();
-        this.resultUrls = new ArrayList<>();
-        this.resultEmails = new ArrayList<>();
-        this.resultTelephones = new ArrayList<>();
-    }
-
     public boolean setUrls(Set<String> urls) {
         if (urls == null || urls.isEmpty())
             return false;
 
-        this.urlSet = urls;
+        this.urlsToHttpCrawl = urls;
         return true;
     }
 
-    public boolean start() throws IOException {
 
+    public List<Url> start() {
 
-        Set<String> parentUrls = getUrlSet();
+        Set<String> parentUrls = getUrlsToHttpCrawl();
         if (parentUrls == null || parentUrls.isEmpty()) {
             throw new RuntimeException("No urls to crawl");
         }
 
-        // filter url's by filterList (i.e. google, bing, youtube are unnecessary targets
         Set<String> filterParentUrls = filterUrlSet(parentUrls);
-
-        System.out.println("Total unique links found: " + filterParentUrls.size());
 
         // crawl each parentUrl
         for (String parentUrl : filterParentUrls) {
-            System.out.println("Start crawling: " + parentUrl);
+
+            Url url = new Url();
+
+            url.setParentUrl(parentUrl);
 
             WebDocument document = new WebDocument();
-            document.crawlUrl(parentUrl);
+            try {
+                document.crawlUrl(parentUrl);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
             Element.setWebDocument(document);
-
-//            System.out.println(document.getHTML());
-//            Element.getElementList(Tag.BODY).forEach(System.out::println);
-//            System.out.println(getContentAndSubtractAllElements(Tag.HTML));
-//            getElementListFromElementHTML(Tag.HYPER_LINK, Tag.HTML).forEach(System.out::println);
 
             // find all childUrls in parentUrl
             List<String> foundChildUrls = getElementListFromElementHTML(Tag.HYPER_LINK, Tag.HTML)
@@ -89,16 +75,18 @@ public class HttpSearch {
                     }).collect(Collectors.toList());
             foundChildUrls.add(parentUrl);
 
-//            foundChildUrls.forEach(System.out::println);
-
             // remove duplicates from list
             Set<String> removeDuplicateUrlsSet = new HashSet<>(foundChildUrls);
             foundChildUrls.clear();
             foundChildUrls.addAll(filterUrlSet(removeDuplicateUrlsSet));
 
+            url.setNumberOfChildUrl(String.valueOf(foundChildUrls.size()));
+
             // reformat childUrls to complete url, simultaneously remove none urls and add none urls to specified set
             // none urls may contain targets to scrape i.e. <a href="mailto:info@example.nl>
             final String DOMAIN_NAME = subtractDomainName(parentUrl);
+            url.setTitle(DOMAIN_NAME);
+
             List<String> noneHttpUrls = new ArrayList<>();
             foundChildUrls = foundChildUrls
                     .stream()
@@ -129,43 +117,63 @@ public class HttpSearch {
             if (!noneHttpUrls.isEmpty())
                 startScrapeDetails(truncateListToString(noneHttpUrls));
 
-//            noneHttpUrls.forEach(System.out::println);
-
             // search contact in urls and put it on first priority in list for crawling
             final String prioritizeUrlContainsWord = "contact";
             List<String> organizedChildUrls = prioritizeUrlListByTitle(foundChildUrls, prioritizeUrlContainsWord);
 
-            System.out.println("Child links found: " + organizedChildUrls.size());
-            System.out.println("crawling through child links");
             // crawl through childUrls and scrape activated targets
             for (String childUrl : organizedChildUrls) {
                 WebDocument targetDocument = new WebDocument();
-                targetDocument.crawlUrl(childUrl);
+                try {
+                    targetDocument.crawlUrl(childUrl);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
                 Element.setWebDocument(targetDocument);
                 startScrapeDetails();
             }
 
-            this.resultUrls.add(parentUrl);
-            this.resultEmails.add(new HashSet<>(getEmails()));
-            this.resultTelephones.add(new HashMap<>(getTelephones()));
+            Url completeUrl = addScrapeResultsToUrl(url);
+            getUrlResultList().add(completeUrl);
 
             getEmails().clear();
             getTelephones().clear();
         }
 
-        System.out.println("Done crawling");
-        System.out.println("");
-        System.out.println("Results: ");
-        for (int i = 0; i < resultUrls.size(); i++) {
-            System.out.println(resultUrls.get(i));
-            resultEmails.get(i).forEach(e -> System.out.println("\t" + e));
-            for (Map.Entry<String, Integer> result : resultTelephones.get(i).entrySet()) {
-                System.out.println("\t\t" + result.getValue() + "x - " + result.getKey());
+        return urlResultList;
+    }
+
+    private Url addScrapeResultsToUrl(Url url) {
+
+        Set<PhoneNumber> phoneNumberSet = new HashSet<>();
+        if (!getTelephones().isEmpty()) {
+            for (Map.Entry<String, Integer> singlePhoneNumber : getTelephones().entrySet()) {
+                PhoneNumber phoneNumber = new PhoneNumber();
+                phoneNumber.setUrl(url);
+                phoneNumber.setPhoneNumber(singlePhoneNumber.getKey());
+                phoneNumber.setNumberOfHits(singlePhoneNumber.getValue());
+
+                phoneNumberSet.add(phoneNumber);
             }
         }
 
-        return true;
+        Set<Email> emailSet = new HashSet<>();
+        if (!getEmails().isEmpty()) {
+            getEmails().forEach(e -> {
+                Email email = new Email();
+                email.setUrl(url);
+                email.setEmail(e);
+
+                emailSet.add(email);
+            });
+        }
+
+        url.getPhoneNumber().addAll(phoneNumberSet);
+        url.getEmail().addAll(emailSet);
+
+        return url;
     }
+
 
     private String truncateListToString(List<String> noneHttpUrls) {
         StringBuilder truncateHTML = new StringBuilder();
@@ -232,7 +240,10 @@ public class HttpSearch {
                 "[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.(?:nl|com|be)|"
         ).matcher(truncatedHTML);
         while (m.find()) {
-            getEmails().add(m.group());
+            if (m.group() != "") {
+                System.out.println("found email: " + m.group());
+                getEmails().add(m.group());
+            }
         }
     }
 
@@ -280,8 +291,16 @@ public class HttpSearch {
         return url.substring(startDomain, endDomain);
     }
 
-    public Set<String> getUrlSet() {
-        return urlSet;
+    public List<Url> getUrlResultList() {
+        return urlResultList;
+    }
+
+    public void setUrlResultList(List<Url> urlResultList) {
+        this.urlResultList = urlResultList;
+    }
+
+    public Set<String> getUrlsToHttpCrawl() {
+        return urlsToHttpCrawl;
     }
 
     private boolean isFindEmail() {
