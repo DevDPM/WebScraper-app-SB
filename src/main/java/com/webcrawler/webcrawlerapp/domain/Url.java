@@ -26,19 +26,19 @@ public class Url extends BaseEntity{
     private Keyword keyword;
     @JsonManagedReference
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "url")
-    private Set<PhoneNumber> phoneNumber = new HashSet<>();
+    private Set<PhoneNumber> phoneNumberSet = new HashSet<>();
     @JsonManagedReference
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "url")
-    private Set<Email> email = new HashSet<>();
+    private Set<Email> emailSet = new HashSet<>();
 
     @Builder
-    public Url(UUID id, String parentUrl, String title, String numberOfChildUrl, Keyword keyword, Set<PhoneNumber> phoneNumber, Set<Email> email) {
+    public Url(UUID id, String parentUrl, String title, String numberOfChildUrl, Keyword keyword, Set<PhoneNumber> phoneNumberSet, Set<Email> emailSet) {
         super(id);
         this.parentUrl = parentUrl;
         this.title = title;
         this.numberOfChildUrl = numberOfChildUrl;
         this.keyword = keyword;
-        this.phoneNumber = phoneNumber;
-        this.email = email;
+        this.phoneNumberSet = phoneNumberSet;
+        this.emailSet = emailSet;
     }
 }

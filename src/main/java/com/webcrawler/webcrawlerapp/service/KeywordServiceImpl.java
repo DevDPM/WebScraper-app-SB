@@ -6,12 +6,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class KeywordServiceImpl implements KeywordService {
 
-//    private Map<UUID, Keyword> keywordMap;
     private final KeywordRepository keywordRepository;
 
     @Override
@@ -35,6 +33,11 @@ public class KeywordServiceImpl implements KeywordService {
     @Override
     public Keyword saveNewKeyword(Keyword newKeyword) {
         return keywordRepository.save(newKeyword);
+    }
+
+    @Override
+    public void deleteKeywordById(UUID keywordId) {
+        keywordRepository.deleteById(keywordId);
     }
 
     public KeywordServiceImpl(KeywordRepository keywordRepository) {

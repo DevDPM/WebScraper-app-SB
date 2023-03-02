@@ -6,7 +6,6 @@ import com.webcrawler.webcrawlerapp.domain.PhoneNumber;
 import com.webcrawler.webcrawlerapp.domain.Url;
 import com.webcrawler.webcrawlerapp.repository.KeywordRepository;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.stereotype.Component;
 
 //@Component
 public class DataLoader implements CommandLineRunner {
@@ -52,10 +51,10 @@ public class DataLoader implements CommandLineRunner {
         email12.setEmail("example2@gmail.com");
         email12.setUrl(url1);
 
-        url1.getEmail().add(email11);
-        url1.getEmail().add(email12);
-        url1.getPhoneNumber().add(phoneNumber11);
-        url1.getPhoneNumber().add(phoneNumber12);
+        url1.getEmailSet().add(email11);
+        url1.getEmailSet().add(email12);
+        url1.getPhoneNumberSet().add(phoneNumber11);
+        url1.getPhoneNumberSet().add(phoneNumber12);
         keyword.getUrls().add(url1);
 
         //
@@ -85,10 +84,10 @@ public class DataLoader implements CommandLineRunner {
         email22.setUrl(url2);
 
 
-        url2.getEmail().add(email21);
-        url2.getEmail().add(email22);
-        url2.getPhoneNumber().add(phoneNumber21);
-        url2.getPhoneNumber().add(phoneNumber22);
+        url2.getEmailSet().add(email21);
+        url2.getEmailSet().add(email22);
+        url2.getPhoneNumberSet().add(phoneNumber21);
+        url2.getPhoneNumberSet().add(phoneNumber22);
         keyword.getUrls().add(url2);
 
         keywordRepository.save(keyword);

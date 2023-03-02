@@ -10,4 +10,6 @@ public interface KeywordService {
     Keyword getKeywordById(UUID id);
 
     Keyword saveNewKeyword(Keyword newKeyword);
+
+    void deleteKeywordById(UUID keywordId);
 }

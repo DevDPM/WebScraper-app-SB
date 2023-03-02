@@ -169,8 +169,8 @@ public class HttpSearchScraping {
             }
         }
 
-        url.getPhoneNumber().addAll(phoneNumberSet);
-        url.getEmail().addAll(emailSet);
+        url.getPhoneNumberSet().addAll(phoneNumberSet);
+        url.getEmailSet().addAll(emailSet);
 
         return url;
     }

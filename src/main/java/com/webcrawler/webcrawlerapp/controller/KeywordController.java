@@ -4,6 +4,7 @@ import com.webcrawler.webcrawlerapp.domain.Keyword;
 import com.webcrawler.webcrawlerapp.service.CrawlBotCallableService;
 import com.webcrawler.webcrawlerapp.service.KeywordService;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,6 +15,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+@CrossOrigin(origins = "http://localhost:4200") // Angular frontend
 @AllArgsConstructor
 @RestController
 public class KeywordController {
@@ -48,14 +50,22 @@ public class KeywordController {
         return response;
     }
 
-    @GetMapping(value = {URL_PATHS.API_URL})
-    public List<Keyword> listKeywords(@RequestParam(value = "keyword", required = false) String keyword) {
-        return keywordService.listKeywords(keyword);
+    @GetMapping(value = {URL_PATHS.API})
+    public ResponseEntity<List<Keyword>> listKeywords(@RequestParam(value = "keyword", required = false) String keyword) {
+        List<Keyword> keywordList = keywordService.listKeywords(keyword);
+        return new ResponseEntity<>(keywordList, HttpStatus.OK);
     }
 
     @GetMapping(value = URL_PATHS.API_KEYWORD_BY_ID)
-    public Keyword getKeywordById(@PathVariable("keywordId") UUID keywordId) {
-        return keywordService.getKeywordById(keywordId);
+    public ResponseEntity<Keyword> getKeywordById(@PathVariable("keywordId") UUID keywordId) {
+        Keyword keyword = keywordService.getKeywordById(keywordId);
+        return new ResponseEntity<>(keyword, HttpStatus.OK);
+    }
+
+    @DeleteMapping(value = URL_PATHS.API_START_DELETION_KEYWORD_BY_ID)
+    public ResponseEntity deleteKeywordById(@PathVariable("keywordId") UUID keywordId) {
+        keywordService.deleteKeywordById(keywordId);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 

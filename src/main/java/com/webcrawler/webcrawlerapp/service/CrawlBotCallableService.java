@@ -54,12 +54,12 @@ public class CrawlBotCallableService implements Callable<ResponseEntity> {
         }).collect(Collectors.toList());
 
         newKeyword.getUrls().addAll(urlResults);
-
+        newKeyword.setNumberOfPages(urlResults.size());
         Keyword savedKeyword = keywordService.saveNewKeyword(newKeyword);
         System.out.println("new Keyword saved");
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Location", URL_PATHS.API_URL + savedKeyword.getId().toString());
+        headers.add("Location", URL_PATHS.API + savedKeyword.getId().toString());
 
         return new ResponseEntity(headers, HttpStatus.CREATED);
     }
