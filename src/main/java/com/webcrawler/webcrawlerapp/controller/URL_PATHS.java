@@ -1,6 +1,6 @@
 package com.webcrawler.webcrawlerapp.controller;
 
-public final class URLS {
+public final class URL_PATHS {
 
     public static final String API_URL = "/api/v1/keyword";
     private static final String START_CRAWLING = "/crawling";

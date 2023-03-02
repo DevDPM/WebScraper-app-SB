@@ -3,8 +3,10 @@ package com.webcrawler.webcrawlerapp.service;
 import com.webcrawler.webcrawlerapp.domain.Keyword;
 import com.webcrawler.webcrawlerapp.repository.KeywordRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class KeywordServiceImpl implements KeywordService {
@@ -13,15 +15,21 @@ public class KeywordServiceImpl implements KeywordService {
     private final KeywordRepository keywordRepository;
 
     @Override
-    public List<Keyword> listKeywords() {
-        return keywordRepository.findAll();
-//        return new ArrayList<>(keywordMap.values());
+    public List<Keyword> listKeywords(String keyword) {
+
+        List<Keyword> keywordList;
+
+        if (StringUtils.hasText(keyword)) {
+            keywordList = keywordRepository.findAllByKeywordIsLikeIgnoreCase("%" + keyword + "%");
+        } else {
+            keywordList = keywordRepository.findAll();
+        }
+        return keywordList;
     }
 
     @Override
     public Keyword getKeywordById(UUID id) {
         return keywordRepository.findById(id).orElse(null);
-//        return keywordMap.get(id);
     }
 
     @Override

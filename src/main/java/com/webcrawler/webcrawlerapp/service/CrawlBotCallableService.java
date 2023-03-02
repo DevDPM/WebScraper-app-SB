@@ -1,6 +1,6 @@
 package com.webcrawler.webcrawlerapp.service;
 
-import com.webcrawler.webcrawlerapp.controller.URLS;
+import com.webcrawler.webcrawlerapp.controller.URL_PATHS;
 import com.webcrawler.webcrawlerapp.domain.Keyword;
 import com.webcrawler.webcrawlerapp.domain.Url;
 import com.webcrawler.webcrawlerapp.utils.HttpSearchScraping;
@@ -59,7 +59,7 @@ public class CrawlBotCallableService implements Callable<ResponseEntity> {
         System.out.println("new Keyword saved");
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Location", URLS.API_URL + savedKeyword.getId().toString());
+        headers.add("Location", URL_PATHS.API_URL + savedKeyword.getId().toString());
 
         return new ResponseEntity(headers, HttpStatus.CREATED);
     }

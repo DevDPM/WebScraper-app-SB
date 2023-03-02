@@ -8,12 +8,9 @@ import com.webcrawler.webcrawlerapp.repository.KeywordRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.UUID;
-
-@Component
+//@Component
 public class DataLoader implements CommandLineRunner {
+
 
     KeywordRepository keywordRepository;
 

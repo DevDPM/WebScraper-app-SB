@@ -20,7 +20,7 @@ public class KeywordController {
     private final KeywordService keywordService;
     private final CrawlBotCallableService crawlBotCallableService;
 
-    @PostMapping(value = URLS.API_START_CRAWLING)
+    @PostMapping(value = URL_PATHS.API_START_CRAWLING)
     public ResponseEntity handlePost(@RequestBody Keyword keyword) throws InterruptedException, ExecutionException {
 
         crawlBotCallableService.setBingSearch(keyword.isBingSearch());
@@ -48,12 +48,12 @@ public class KeywordController {
         return response;
     }
 
-    @GetMapping(value = {URLS.API_URL + "",URLS.API_URL + "/"})
-    public List<Keyword> listKeywords() {
-        return keywordService.listKeywords();
+    @GetMapping(value = {URL_PATHS.API_URL})
+    public List<Keyword> listKeywords(@RequestParam(value = "keyword", required = false) String keyword) {
+        return keywordService.listKeywords(keyword);
     }
 
-    @GetMapping(value = URLS.API_KEYWORD_BY_ID)
+    @GetMapping(value = URL_PATHS.API_KEYWORD_BY_ID)
     public Keyword getKeywordById(@PathVariable("keywordId") UUID keywordId) {
         return keywordService.getKeywordById(keywordId);
     }

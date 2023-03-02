@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface KeywordService {
-    List<Keyword> listKeywords();
+    List<Keyword> listKeywords(String keyword);
     Keyword getKeywordById(UUID id);
 
     Keyword saveNewKeyword(Keyword newKeyword);
