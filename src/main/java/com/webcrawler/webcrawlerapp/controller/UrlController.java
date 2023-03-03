@@ -5,6 +5,9 @@ import com.webcrawler.webcrawlerapp.domain.Url;
 import com.webcrawler.webcrawlerapp.service.KeywordService;
 import com.webcrawler.webcrawlerapp.service.UrlService;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -12,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Optional;
 import java.util.UUID;
 
+@CrossOrigin(origins = "http://localhost:4200") // Angular frontend
 @AllArgsConstructor
 @RestController
 public class UrlController {
@@ -19,9 +23,9 @@ public class UrlController {
     private final KeywordService keywordService;
     private final UrlService urlService;
 
-    @DeleteMapping(value = URL_PATHS.API_KEYWORD_BY_ID_URL_BY_ID)
-    public Keyword deleteUrlByIdFromKeywordById(@PathVariable("keywordId") UUID keywordId,
-                                                       @PathVariable("urlId") UUID urlId) {
+    @DeleteMapping(value = URL_PATHS.API_KEYWORD_BY_ID_START_DELETION_URL_BY_ID)
+    public ResponseEntity deleteUrlByIdFromKeywordById(@PathVariable("keywordId") UUID keywordId,
+                                                               @PathVariable("urlId") UUID urlId) {
         Keyword keyword = keywordService.getKeywordById(keywordId);
         Optional<Url> urlToDelete = keyword.getUrls()
                 .stream()
@@ -33,6 +37,6 @@ public class UrlController {
             urlService.deleteByIdAndKeywordId(url.getId(), keyword.getId());
         }
 
-        return keywordService.getKeywordById(keyword.getId());
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

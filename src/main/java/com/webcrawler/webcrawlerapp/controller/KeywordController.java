@@ -26,12 +26,14 @@ public class KeywordController {
     public ResponseEntity handlePost(@RequestBody Keyword keyword) throws InterruptedException, ExecutionException {
 
         crawlBotCallableService.setBingSearch(keyword.isBingSearch());
-        crawlBotCallableService.setGoogleSearch(keyword.isGoogleSearch());
+//        crawlBotCallableService.setGoogleSearch(keyword.isGoogleSearch());
+        crawlBotCallableService.setGoogleSearch(true);
         crawlBotCallableService.setFindNumberOfPages(keyword.getNumberOfPages());
         crawlBotCallableService.setKeyword(keyword);
 
         System.out.println("task started");
         System.out.println("");
+        System.out.println(keyword.getKeyword());
 
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         Future<ResponseEntity> returnedValues = executorService.submit(() -> {
