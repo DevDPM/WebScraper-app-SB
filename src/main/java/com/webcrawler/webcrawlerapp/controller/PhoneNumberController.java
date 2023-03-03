@@ -30,7 +30,7 @@ public class PhoneNumberController {
     @DeleteMapping(value = URL_PATHS.API_KEYWORD_BY_ID_URL_BY_ID_START_DELETION_PHONENUMBER_BY_ID)
     public ResponseEntity deleteEmailByIdByUrlByIdByKeywordById(@PathVariable("keywordId") UUID keywordId,
                                                                 @PathVariable("urlId") UUID urlId,
-                                                                @PathVariable("phoneNumerId") UUID phoneNumberId) {
+                                                                @PathVariable("phoneNumberId") UUID phoneNumberId) {
         Keyword keyword = keywordService.getKeywordById(keywordId);
         Optional<Url> url = keyword.getUrls()
                 .stream()

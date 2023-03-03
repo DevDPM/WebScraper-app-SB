@@ -35,7 +35,7 @@ public class UrlServiceImpl implements UrlService {
     @Override
     public Url getUrlByIdByKeywordById(UUID urlId, UUID keywordId) {
         Keyword keyword = keywordService.getKeywordById(keywordId);
-        Optional<Url> url = keyword.getUrls().stream().filter(e -> e.getId().equals(keywordId)).findFirst();
+        Optional<Url> url = keyword.getUrls().stream().filter(e -> e.getId().equals(urlId)).findFirst();
 
         return url.orElse(null);
     }
