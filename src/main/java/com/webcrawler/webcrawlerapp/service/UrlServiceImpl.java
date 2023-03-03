@@ -5,6 +5,7 @@ import com.webcrawler.webcrawlerapp.domain.Url;
 import com.webcrawler.webcrawlerapp.repository.UrlRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -29,5 +30,13 @@ public class UrlServiceImpl implements UrlService {
         Keyword keyword = keywordService.getKeywordById(keywordId);
         keyword.removeUrl(getUrlById(urlId));
         urlRepository.deleteById(urlId);
+    }
+
+    @Override
+    public Url getUrlByIdByKeywordById(UUID urlId, UUID keywordId) {
+        Keyword keyword = keywordService.getKeywordById(keywordId);
+        Optional<Url> url = keyword.getUrls().stream().filter(e -> e.getId().equals(keywordId)).findFirst();
+
+        return url.orElse(null);
     }
 }

@@ -37,6 +37,6 @@ public class UrlController {
             urlService.deleteByIdAndKeywordId(url.getId(), keyword.getId());
         }
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity(HttpStatus.OK);
     }
 }

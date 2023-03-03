@@ -11,4 +11,6 @@ public interface UrlService {
     Url getUrlById(UUID id);
 
     void deleteByIdAndKeywordId(UUID urlId, UUID keywordId);
+
+    Url getUrlByIdByKeywordById(UUID urlId, UUID keywordId);
 }
