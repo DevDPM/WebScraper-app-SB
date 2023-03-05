@@ -49,6 +49,8 @@ public class KeywordController {
             Thread.sleep(60000);
         }
 
+//        returnedValues.wait();
+
         ResponseEntity response = returnedValues.get();
 
         return response;
