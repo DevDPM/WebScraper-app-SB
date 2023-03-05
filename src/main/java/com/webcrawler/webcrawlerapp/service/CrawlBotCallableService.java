@@ -42,9 +42,9 @@ public class CrawlBotCallableService implements Callable<ResponseEntity> {
         newKeywordProgression.setAdditionalInfo("Crawl search engines..");
         newKeywordProgression.setPercentageCompleted("0%");
         newKeywordProgression.setEstimatedTime("-");
-        keywordProgressionService.addKeywordProgress(newKeywordProgression);
+        KeywordProgression kp = keywordProgressionService.addKeywordProgress(newKeywordProgression);
 
-        WebSearchScraping webSearchScraping = new WebSearchScraping(keywordProgressionService);
+        WebSearchScraping webSearchScraping = new WebSearchScraping(kp);
         webSearchScraping.setKeyword(newKeyword.getKeyword());
         webSearchScraping.setGoogleSearch(googleSearch);
         webSearchScraping.setBingSearch(bingSearch);
@@ -53,7 +53,7 @@ public class CrawlBotCallableService implements Callable<ResponseEntity> {
         webSearchScraping.start();
 
         Set<String> urlSet = webSearchScraping.getUrlList();
-        HttpSearchScraping httpSearchScraping = new HttpSearchScraping(keywordProgressionService);
+        HttpSearchScraping httpSearchScraping = new HttpSearchScraping(kp);
         httpSearchScraping.setKeywordProgression(newKeywordProgression);
         httpSearchScraping.setUrls(urlSet);
         httpSearchScraping.setFindEmail(true);

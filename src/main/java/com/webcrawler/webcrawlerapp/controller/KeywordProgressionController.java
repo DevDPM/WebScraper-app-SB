@@ -21,7 +21,7 @@ public class KeywordProgressionController {
     @GetMapping(value = URL_PATH.API_GET_KEYWORD_PROGRESSION)
     public ResponseEntity<List<KeywordProgression>> getKeywordLoader() {
 
-        List<KeywordProgression> progressList = new ArrayList<>(keywordProgressionService.GetAllKeywordProgression());
+        List<KeywordProgression> progressList = keywordProgressionService.GetAllKeywordProgression();
 
         return new ResponseEntity<>(progressList, HttpStatus.OK);
     }

@@ -1,8 +1,10 @@
 package com.webcrawler.webcrawlerapp.controller;
 
 import com.webcrawler.webcrawlerapp.domain.Keyword;
+import com.webcrawler.webcrawlerapp.domain.Settings;
 import com.webcrawler.webcrawlerapp.service.CrawlBotCallableService;
 import com.webcrawler.webcrawlerapp.service.KeywordService;
+import com.webcrawler.webcrawlerapp.service.SettingService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,17 +22,16 @@ import java.util.concurrent.Future;
 @RestController
 public class KeywordController {
     private final KeywordService keywordService;
+    private final SettingService settingService;
     private final CrawlBotCallableService crawlBotCallableService;
 
     @PostMapping(value = URL_PATH.API_START_CRAWLING)
     public ResponseEntity handlePost(@RequestBody Keyword keyword) throws InterruptedException, ExecutionException {
 
-//        crawlBotCallableService.setBingSearch(keyword.isBingSearch());
-        crawlBotCallableService.setBingSearch(true);
-//        crawlBotCallableService.setGoogleSearch(keyword.isGoogleSearch());
-        crawlBotCallableService.setGoogleSearch(true);
-//        crawlBotCallableService.setFindNumberOfPages(keyword.getNumberOfPages());
-        crawlBotCallableService.setFindNumberOfPages(5);
+        Settings settings = settingService.getSetting();
+        crawlBotCallableService.setBingSearch(settings.isBingSearch());
+        crawlBotCallableService.setGoogleSearch(settings.isGoogleSearch());
+        crawlBotCallableService.setFindNumberOfPages(settings.getNumberOfPages());
         crawlBotCallableService.setKeyword(keyword);
 
         System.out.println("task started");

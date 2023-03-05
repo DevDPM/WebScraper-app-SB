@@ -1,62 +1,97 @@
 package com.webcrawler.webcrawlerapp.service;
 
 import com.webcrawler.webcrawlerapp.domain.KeywordProgression;
-import com.webcrawler.webcrawlerapp.repository.KeywordProgressionRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class KeywordProgressionServiceImpl implements KeywordProgressionService {
 
-    private final KeywordProgressionRepository keywordProgressionRepository;
-
-    public KeywordProgressionServiceImpl(KeywordProgressionRepository keywordProgressionRepository) {
-        this.keywordProgressionRepository = keywordProgressionRepository;
-    }
+    private List<KeywordProgression> keywordProgressionList = new ArrayList<>();
 
     @Override
     public List<KeywordProgression> GetAllKeywordProgression() {
-        List<KeywordProgression> keywordProgressions = keywordProgressionRepository.findAll();
 
-        return keywordProgressions;
-    }
-
-    public KeywordProgression addKeywordProgress(KeywordProgression keywordProgress) {
-        KeywordProgression savedKeywordProgress = keywordProgressionRepository.save(keywordProgress);
-        return savedKeywordProgress;
-    }
-
-    public void DeleteKeywordProgress(KeywordProgression keywordProgress) {
-        keywordProgressionRepository.delete(keywordProgress);
-    }
-
-    public KeywordProgression getKeywordProgressById(UUID id) {
-        KeywordProgression keywordProgress = keywordProgressionRepository.getById(id);
-        return keywordProgress;
-    }
-
-    public void UpdateKeywordProgress(KeywordProgression keywordProgress) {
-        Optional<KeywordProgression> returnKeywordProgress = GetAllKeywordProgression()
-                .stream()
-                .filter(e -> e.getId().equals(keywordProgress.getId()))
-                .map(e-> {
-                    e.setAdditionalInfo(keywordProgress.getAdditionalInfo());
-                    e.setEstimatedTime(keywordProgress.getEstimatedTime());
-                    e.setPercentageCompleted(keywordProgress.getPercentageCompleted());
-                    return e;
-                }).findFirst();
-
-        if (!returnKeywordProgress.isPresent())
-            return;
-
-        keywordProgressionRepository.save(returnKeywordProgress.get());
+        return keywordProgressionList;
     }
 
     @Override
-    public void deleteKeywordProgressionById(UUID keywordProgressionId) {
-        keywordProgressionRepository.deleteById(keywordProgressionId);
+    public KeywordProgression addKeywordProgress(KeywordProgression keywordProgress) {
+
+        UUID newId;
+        while (true) {
+            newId = generateRandomUUID();
+            UUID finalNewId = newId;
+            Optional<KeywordProgression> idMatch = keywordProgressionList
+                    .stream()
+                    .filter(keywordProgression -> {
+                        return keywordProgression.getId().equals(finalNewId);
+                    }).findFirst();
+            if (idMatch.isEmpty())
+                break;
+        }
+
+        KeywordProgression newKeywordProgress = keywordProgress;
+        newKeywordProgress.setId(newId);
+
+        keywordProgressionList.add(newKeywordProgress);
+
+        return newKeywordProgress;
+    }
+
+    private UUID generateRandomUUID() {
+        return UUID.randomUUID();
+    }
+
+    @Override
+    public void DeleteKeywordProgress(KeywordProgression keywordProgression) {
+        keywordProgressionList.remove(keywordProgression);
+
+    }
+
+    public KeywordProgression getKeywordProgressById(UUID id) {
+        Optional<KeywordProgression> keywordProgression = keywordProgressionList.stream()
+                .filter(kp -> {
+                    return kp.getId().equals(id);
+                }).findFirst();
+
+        return keywordProgression.orElse(null);
+    }
+
+    public KeywordProgression UpdateKeywordProgress(KeywordProgression keywordProgress) {
+
+        Optional<KeywordProgression> returnKeywordProgress = keywordProgressionList
+                .stream()
+                .filter(kpFind -> {
+                    return kpFind.getId().equals(keywordProgress.getId());
+                })
+                .map(kpConvert -> {
+                    kpConvert.setKeyword(keywordProgress.getKeyword());
+                    kpConvert.setEstimatedTime(keywordProgress.getEstimatedTime());
+                    kpConvert.setAdditionalInfo(keywordProgress.getAdditionalInfo());
+                    kpConvert.setPercentageCompleted(keywordProgress.getPercentageCompleted());
+                    return kpConvert;
+                })
+                .findFirst();
+
+        if (returnKeywordProgress.isEmpty())
+            return null;
+
+        return returnKeywordProgress.get();
+    }
+
+    @Override
+    public void deleteKeywordProgressionById(UUID id) {
+        Optional<KeywordProgression> kpToDelete = keywordProgressionList
+                .stream()
+                .filter(kp -> {
+                    return kp.getId().equals(id);
+                }).findFirst();
+
+        if (kpToDelete.isEmpty())
+            return;
+
+        keywordProgressionList.remove(kpToDelete.get());
     }
 }

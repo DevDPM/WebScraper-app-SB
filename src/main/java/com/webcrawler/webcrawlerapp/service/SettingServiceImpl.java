@@ -20,15 +20,16 @@ public class SettingServiceImpl implements SettingService {
     public Settings updateSetting(Settings settings) {
         Optional<Settings> updatedSetting = getAllSettings()
                 .stream()
-                .filter(targetSetting -> {
-                    return targetSetting.getId().equals(settings.getId());
-                })
+                .findFirst()
+//                .filter(targetSetting -> { targetSetting
+//                    return targetSetting.getId().equals(settings.getId());
+//                })
                 .map(updateSetting -> {
                     updateSetting.setNumberOfPages(settings.getNumberOfPages());
                     updateSetting.setBingSearch(settings.isBingSearch());
                     updateSetting.setGoogleSearch(settings.isGoogleSearch());
                     return updateSetting;
-                }).findFirst();
+                });
 
         return updatedSetting.map(saveSetting -> {
             return settingsRepository.save(saveSetting);

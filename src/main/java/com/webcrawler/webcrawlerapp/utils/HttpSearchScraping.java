@@ -18,7 +18,6 @@ import static com.webcrawler.webcrawlerapp.utils.Element.*;
 
 public class HttpSearchScraping {
 
-    private final KeywordProgressionService keywordProgressionService;
     private KeywordProgression keywordProgression;
     private boolean findEmail = false;
     private boolean findTelephone = false;
@@ -41,8 +40,8 @@ public class HttpSearchScraping {
     };
 
 
-    public HttpSearchScraping(KeywordProgressionService keywordProgressionService) {
-        this.keywordProgressionService = keywordProgressionService;
+    public HttpSearchScraping(KeywordProgression kp) {
+        this.keywordProgression = kp;
     }
 
     public boolean setUrls(Set<String> urls) {
@@ -162,14 +161,12 @@ public class HttpSearchScraping {
 
             keywordProgression.setPercentageCompleted(percentageDone + " %");
             keywordProgression.setEstimatedTime(getEstimatedTimeLeft(startTime, currentTime, percentageDone) + " sec.");
-            keywordProgressionService.UpdateKeywordProgress(keywordProgression);
             parentUrlCount++;
         }
 
         keywordProgression.setPercentageCompleted("100 %");
         keywordProgression.setAdditionalInfo("Done crawling");
         keywordProgression.setEstimatedTime("0 sec.");
-        keywordProgressionService.UpdateKeywordProgress(keywordProgression);
 
         return urlResultList;
     }

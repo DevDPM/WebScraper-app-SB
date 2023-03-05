@@ -17,7 +17,8 @@ public class SettingController {
     @PostMapping(value = URL_PATH.API_SETTINGS)
     public ResponseEntity handlePost(@RequestBody Settings settings) {
         System.out.println("received: " + settings.toString());
-        Settings newSetting = settingService.updateSetting(settings);
+        Settings updateSettings = settings;
+        Settings newSetting = settingService.updateSetting(updateSettings);
 
         return new ResponseEntity(newSetting, HttpStatus.OK);
     }

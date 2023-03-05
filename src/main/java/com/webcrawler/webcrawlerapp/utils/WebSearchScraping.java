@@ -20,7 +20,6 @@ public class WebSearchScraping {
 
     }
 
-    private final KeywordProgressionService keywordProgressionService;
     private KeywordProgression keywordProgression;
     private Set<String> urlList;
     private String keyword;
@@ -29,8 +28,8 @@ public class WebSearchScraping {
     private boolean bingSearch;
     private Set<Engine> engines;
 
-    public WebSearchScraping(KeywordProgressionService keywordProgressionService) {
-        this.keywordProgressionService = keywordProgressionService;
+    public WebSearchScraping(KeywordProgression kp) {
+        this.keywordProgression = kp;
         this.urlList = new HashSet<>();
         this.googleSearch = false;
         this.bingSearch = false;
@@ -62,7 +61,6 @@ public class WebSearchScraping {
         for (Engine engine : engines) {
 
             keywordProgression.setAdditionalInfo("Start searching: " + engine.toString().toLowerCase()+ "..");
-            keywordProgressionService.UpdateKeywordProgress(keywordProgression);
 
             WebDocument document = new WebDocument();
 

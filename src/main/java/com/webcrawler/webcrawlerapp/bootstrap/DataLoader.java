@@ -25,7 +25,7 @@ public class DataLoader implements CommandLineRunner {
         Settings settings = new Settings();
         settings.setGoogleSearch(true);
         settings.setBingSearch(true);
-        settings.setNumberOfPages(100);
+        settings.setNumberOfPages(10);
         settingsRepository.save(settings);
 
         System.out.println("Settings loaded");
