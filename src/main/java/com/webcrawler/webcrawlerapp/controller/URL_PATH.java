@@ -11,6 +11,7 @@ public final class URL_PATH {
     private static final String URL_BY_ID = "/{urlId}";
     private static final String PHONENUMBER_BY_ID = "/phoneNumber/{phoneNumberId}";
     private static final String EMAIL_BY_ID = "/email/{emailId}";
+    private static final String SETTINGS = "/settings";
 
     public static final String API_START_CRAWLING = API + START_CRAWLING;
     public static final String API_KEYWORD_BY_ID = API + KEYWORD_BY_ID;
@@ -24,5 +25,6 @@ public final class URL_PATH {
 
     public static final String API_GET_KEYWORD_PROGRESSION = API + GET_KEYWORD_PROGRESSION;
     public static final String API_START_DELETION_GET_KEYWORD_PROGRESSION = API + START_DELETION + GET_KEYWORD_PROGRESSION;
+    public static final String API_SETTINGS = API + SETTINGS;
 
 }

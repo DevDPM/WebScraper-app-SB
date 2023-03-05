@@ -76,7 +76,7 @@ public class WebSearchScraping {
                     getNumberOfHttpPages() < 0)
                 break;
 
-            String searchUrl = searchEngine.getSearchUrl(getKeyword(), getNumberOfHttpPages());
+            String searchUrl = searchEngine.getSearchUrl(replaceSpaceByPlus(getKeyword()), getNumberOfHttpPages());
 
             System.out.println(searchUrl);
             try {
@@ -97,6 +97,10 @@ public class WebSearchScraping {
             addFoundUrlsToUrlList(searchEngine.subtractHttpDomain(foundUrls));
         }
         return;
+    }
+
+    private String replaceSpaceByPlus(String keyword) {
+        return keyword.replace(" ", "+");
     }
 
     private boolean addFoundUrlsToUrlList(Set<String> foundUrls) {

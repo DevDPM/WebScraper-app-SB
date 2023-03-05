@@ -71,6 +71,8 @@ public class CrawlBotCallableService implements Callable<ResponseEntity> {
         newKeyword.setNumberOfPages(urlResults.size());
         Keyword savedKeyword = keywordService.saveNewKeyword(newKeyword);
 
+        System.out.println("Done crawling " + newKeyword.getKeyword());
+
         HttpHeaders headers = new HttpHeaders();
         headers.add("Location", URL_PATH.API + savedKeyword.getId().toString());
 
