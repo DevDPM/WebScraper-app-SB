@@ -2,12 +2,9 @@ package com.webcrawler.webcrawlerapp.controller;
 
 import com.webcrawler.webcrawlerapp.domain.Email;
 import com.webcrawler.webcrawlerapp.domain.Keyword;
-import com.webcrawler.webcrawlerapp.domain.PhoneNumber;
 import com.webcrawler.webcrawlerapp.domain.Url;
 import com.webcrawler.webcrawlerapp.service.EmailService;
 import com.webcrawler.webcrawlerapp.service.KeywordService;
-import com.webcrawler.webcrawlerapp.service.PhoneNumberService;
-import com.webcrawler.webcrawlerapp.service.UrlService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +24,7 @@ public class EmailController {
     private final KeywordService keywordService;
     private final EmailService emailService;
 
-    @DeleteMapping(value = URL_PATHS.API_KEYWORD_BY_ID_URL_BY_ID_START_DELETION_EMAIL_BY_ID)
+    @DeleteMapping(value = URL_PATH.API_KEYWORD_BY_ID_URL_BY_ID_START_DELETION_EMAIL_BY_ID)
     public ResponseEntity deleteEmailByIdByUrlByIdByKeywordById(@PathVariable("keywordId") UUID keywordId,
                                                                 @PathVariable("urlId") UUID urlId,
                                                                 @PathVariable("emailId") UUID emailId) {

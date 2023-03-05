@@ -1,7 +1,8 @@
 package com.webcrawler.webcrawlerapp.service;
 
-import com.webcrawler.webcrawlerapp.controller.URL_PATHS;
+import com.webcrawler.webcrawlerapp.controller.URL_PATH;
 import com.webcrawler.webcrawlerapp.domain.Keyword;
+import com.webcrawler.webcrawlerapp.domain.KeywordProgression;
 import com.webcrawler.webcrawlerapp.domain.Url;
 import com.webcrawler.webcrawlerapp.utils.HttpSearchScraping;
 import com.webcrawler.webcrawlerapp.utils.WebSearchScraping;
@@ -18,13 +19,15 @@ import java.util.stream.Collectors;
 @Service
 public class CrawlBotCallableService implements Callable<ResponseEntity> {
 
+    private final KeywordProgressionService keywordProgressionService;
     private final KeywordService keywordService;
     private boolean googleSearch;
     private boolean bingSearch;
     private int findNumberOfPages;
     private Keyword keyword;
 
-    public CrawlBotCallableService(KeywordService keywordService) {
+    public CrawlBotCallableService(KeywordProgressionService keywordProgressionService, KeywordService keywordService) {
+        this.keywordProgressionService = keywordProgressionService;
         this.keywordService = keywordService;
     }
 
@@ -34,15 +37,24 @@ public class CrawlBotCallableService implements Callable<ResponseEntity> {
         Keyword newKeyword = new Keyword();
         newKeyword.setKeyword(keyword.getKeyword());
 
-        WebSearchScraping webSearchScraping = new WebSearchScraping();
+        KeywordProgression newKeywordProgression = new KeywordProgression();
+        newKeywordProgression.setKeyword(keyword.getKeyword());
+        newKeywordProgression.setAdditionalInfo("Crawl search engines..");
+        newKeywordProgression.setPercentageCompleted("0%");
+        newKeywordProgression.setEstimatedTime("-");
+        keywordProgressionService.addKeywordProgress(newKeywordProgression);
+
+        WebSearchScraping webSearchScraping = new WebSearchScraping(keywordProgressionService);
         webSearchScraping.setKeyword(newKeyword.getKeyword());
-        webSearchScraping.setFindNumberOfPages(10);
         webSearchScraping.setGoogleSearch(googleSearch);
         webSearchScraping.setBingSearch(bingSearch);
+        webSearchScraping.setFindNumberOfPages(findNumberOfPages);
+        webSearchScraping.setKeywordProgression(newKeywordProgression);
         webSearchScraping.start();
 
         Set<String> urlSet = webSearchScraping.getUrlList();
-        HttpSearchScraping httpSearchScraping = new HttpSearchScraping();
+        HttpSearchScraping httpSearchScraping = new HttpSearchScraping(keywordProgressionService);
+        httpSearchScraping.setKeywordProgression(newKeywordProgression);
         httpSearchScraping.setUrls(urlSet);
         httpSearchScraping.setFindEmail(true);
         httpSearchScraping.setFindTelephone(true);
@@ -53,13 +65,14 @@ public class CrawlBotCallableService implements Callable<ResponseEntity> {
             return e;
         }).collect(Collectors.toList());
 
+        keywordProgressionService.DeleteKeywordProgress(newKeywordProgression);
+
         newKeyword.getUrls().addAll(urlResults);
         newKeyword.setNumberOfPages(urlResults.size());
         Keyword savedKeyword = keywordService.saveNewKeyword(newKeyword);
-        System.out.println("new Keyword saved");
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Location", URL_PATHS.API + savedKeyword.getId().toString());
+        headers.add("Location", URL_PATH.API + savedKeyword.getId().toString());
 
         return new ResponseEntity(headers, HttpStatus.CREATED);
     }
@@ -73,6 +86,7 @@ public class CrawlBotCallableService implements Callable<ResponseEntity> {
     }
 
     public void setFindNumberOfPages(int findNumberOfPages) {
+        System.out.println("set to :" + findNumberOfPages);
         this.findNumberOfPages = findNumberOfPages;
     }
 

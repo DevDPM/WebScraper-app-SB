@@ -1,10 +1,14 @@
 package com.webcrawler.webcrawlerapp.utils;
 
 import com.webcrawler.webcrawlerapp.domain.Email;
+import com.webcrawler.webcrawlerapp.domain.KeywordProgression;
 import com.webcrawler.webcrawlerapp.domain.PhoneNumber;
 import com.webcrawler.webcrawlerapp.domain.Url;
+import com.webcrawler.webcrawlerapp.service.KeywordProgressionService;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -13,6 +17,9 @@ import java.util.stream.Collectors;
 import static com.webcrawler.webcrawlerapp.utils.Element.*;
 
 public class HttpSearchScraping {
+
+    private final KeywordProgressionService keywordProgressionService;
+    private KeywordProgression keywordProgression;
     private boolean findEmail = false;
     private boolean findTelephone = false;
     private Map<String, Integer> emails = new HashMap<>();
@@ -33,6 +40,11 @@ public class HttpSearchScraping {
             "06", "+31", "020", "085", "0343", "0299"
     };
 
+
+    public HttpSearchScraping(KeywordProgressionService keywordProgressionService) {
+        this.keywordProgressionService = keywordProgressionService;
+    }
+
     public boolean setUrls(Set<String> urls) {
         if (urls == null || urls.isEmpty())
             return false;
@@ -50,6 +62,10 @@ public class HttpSearchScraping {
         }
 
         Set<String> filterParentUrls = filterUrlSet(parentUrls);
+
+        long startTime = System.nanoTime();
+        int parentUrlCount = 1;
+        int totalParentUrls = filterParentUrls.size();
 
         // crawl each parentUrl
         for (String parentUrl : filterParentUrls) {
@@ -86,6 +102,8 @@ public class HttpSearchScraping {
             // none urls may contain targets to scrape i.e. <a href="mailto:info@example.nl>
             final String DOMAIN_NAME = subtractDomainName(parentUrl);
             url.setTitle(DOMAIN_NAME);
+
+            keywordProgression.setAdditionalInfo("Start searching url: " + DOMAIN_NAME + "..");
 
             List<String> noneHttpUrls = new ArrayList<>();
             foundChildUrls = foundChildUrls
@@ -138,9 +156,45 @@ public class HttpSearchScraping {
 
             getEmails().clear();
             getTelephones().clear();
+
+            long currentTime = System.nanoTime();
+            double percentageDone = getPercentageCompleted(totalParentUrls, parentUrlCount);
+
+            keywordProgression.setPercentageCompleted(percentageDone + " %");
+            keywordProgression.setEstimatedTime(getEstimatedTimeLeft(startTime, currentTime, percentageDone) + " sec.");
+            keywordProgressionService.UpdateKeywordProgress(keywordProgression);
+            parentUrlCount++;
         }
 
+        keywordProgression.setPercentageCompleted("100 %");
+        keywordProgression.setAdditionalInfo("Done crawling");
+        keywordProgression.setEstimatedTime("0 sec.");
+        keywordProgressionService.UpdateKeywordProgress(keywordProgression);
+
         return urlResultList;
+    }
+
+    private long getEstimatedTimeLeft(long startTime, long currentTime, double percentageDone) {
+        long estimatedTime = currentTime - startTime;
+        estimatedTime = (estimatedTime / 1_000_000_000); // convert to seconds
+
+        double percentageCorrection = 100/percentageDone;
+        long estimatedTimeLeft = (long) (estimatedTime * percentageCorrection) - estimatedTime;
+
+        return estimatedTimeLeft;
+    }
+
+    private static double round(double value, int places) {
+        if (places < 0) throw new IllegalArgumentException();
+
+        BigDecimal bd = BigDecimal.valueOf(value);
+        bd = bd.setScale(places, RoundingMode.HALF_UP);
+        return bd.doubleValue();
+    }
+
+    private double getPercentageCompleted(int totalParentUrls, int parentUrlCount) {
+        double percentageCompleted = ((double) parentUrlCount/totalParentUrls)*100;
+        return round(percentageCompleted, 2);
     }
 
     private Url addScrapeResultsToUrl(Url url) {
@@ -291,6 +345,10 @@ public class HttpSearchScraping {
 
 
         return url.substring(startDomain, endDomain);
+    }
+
+    public void setKeywordProgression(KeywordProgression keywordProgression) {
+        this.keywordProgression = keywordProgression;
     }
 
     public List<Url> getUrlResultList() {

@@ -23,7 +23,7 @@ public class UrlController {
     private final KeywordService keywordService;
     private final UrlService urlService;
 
-    @DeleteMapping(value = URL_PATHS.API_KEYWORD_BY_ID_START_DELETION_URL_BY_ID)
+    @DeleteMapping(value = URL_PATH.API_KEYWORD_BY_ID_START_DELETION_URL_BY_ID)
     public ResponseEntity deleteUrlByIdFromKeywordById(@PathVariable("keywordId") UUID keywordId,
                                                                @PathVariable("urlId") UUID urlId) {
         Keyword keyword = keywordService.getKeywordById(keywordId);

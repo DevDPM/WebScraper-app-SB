@@ -1,5 +1,7 @@
 package com.webcrawler.webcrawlerapp.utils;
 
+import com.webcrawler.webcrawlerapp.domain.KeywordProgression;
+import com.webcrawler.webcrawlerapp.service.KeywordProgressionService;
 import com.webcrawler.webcrawlerapp.utils.searchEngines.SearchEngine;
 import com.webcrawler.webcrawlerapp.utils.searchEngines.SearchEngineFactory;
 
@@ -18,6 +20,8 @@ public class WebSearchScraping {
 
     }
 
+    private final KeywordProgressionService keywordProgressionService;
+    private KeywordProgression keywordProgression;
     private Set<String> urlList;
     private String keyword;
     private int numberOfHttpPages;
@@ -25,7 +29,8 @@ public class WebSearchScraping {
     private boolean bingSearch;
     private Set<Engine> engines;
 
-    public WebSearchScraping() {
+    public WebSearchScraping(KeywordProgressionService keywordProgressionService) {
+        this.keywordProgressionService = keywordProgressionService;
         this.urlList = new HashSet<>();
         this.googleSearch = false;
         this.bingSearch = false;
@@ -55,7 +60,10 @@ public class WebSearchScraping {
         }
 
         for (Engine engine : engines) {
-            System.out.println("Start searching in: " + engine.toString());
+
+            keywordProgression.setAdditionalInfo("Start searching: " + engine.toString().toLowerCase()+ "..");
+            keywordProgressionService.UpdateKeywordProgress(keywordProgression);
+
             WebDocument document = new WebDocument();
 
             SearchEngineFactory sef = new SearchEngineFactory();
@@ -70,6 +78,7 @@ public class WebSearchScraping {
 
             String searchUrl = searchEngine.getSearchUrl(getKeyword(), getNumberOfHttpPages());
 
+            System.out.println(searchUrl);
             try {
                 document.crawlUrl(searchUrl);
             } catch (IOException e) {
@@ -99,6 +108,10 @@ public class WebSearchScraping {
             engines.add(Engine.GOOGLE);
         if (isBingSearch())
             engines.add(Engine.BING);
+    }
+
+    public void setKeywordProgression(KeywordProgression keywordProgression) {
+        this.keywordProgression = keywordProgression;
     }
 
     private int getNumberOfHttpPages() {

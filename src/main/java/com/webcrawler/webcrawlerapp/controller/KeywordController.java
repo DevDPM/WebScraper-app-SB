@@ -22,17 +22,18 @@ public class KeywordController {
     private final KeywordService keywordService;
     private final CrawlBotCallableService crawlBotCallableService;
 
-    @PostMapping(value = URL_PATHS.API_START_CRAWLING)
+    @PostMapping(value = URL_PATH.API_START_CRAWLING)
     public ResponseEntity handlePost(@RequestBody Keyword keyword) throws InterruptedException, ExecutionException {
 
-        crawlBotCallableService.setBingSearch(keyword.isBingSearch());
+//        crawlBotCallableService.setBingSearch(keyword.isBingSearch());
+        crawlBotCallableService.setBingSearch(true);
 //        crawlBotCallableService.setGoogleSearch(keyword.isGoogleSearch());
         crawlBotCallableService.setGoogleSearch(true);
-        crawlBotCallableService.setFindNumberOfPages(keyword.getNumberOfPages());
+//        crawlBotCallableService.setFindNumberOfPages(keyword.getNumberOfPages());
+        crawlBotCallableService.setFindNumberOfPages(5);
         crawlBotCallableService.setKeyword(keyword);
 
         System.out.println("task started");
-        System.out.println("");
         System.out.println(keyword.getKeyword());
 
         ExecutorService executorService = Executors.newSingleThreadExecutor();
@@ -52,19 +53,19 @@ public class KeywordController {
         return response;
     }
 
-    @GetMapping(value = {URL_PATHS.API})
+    @GetMapping(value = {URL_PATH.API})
     public ResponseEntity<List<Keyword>> listKeywords(@RequestParam(value = "keyword", required = false) String keyword) {
         List<Keyword> keywordList = keywordService.listKeywords(keyword);
         return new ResponseEntity<>(keywordList, HttpStatus.OK);
     }
 
-    @GetMapping(value = URL_PATHS.API_KEYWORD_BY_ID)
+    @GetMapping(value = URL_PATH.API_KEYWORD_BY_ID)
     public ResponseEntity<Keyword> getKeywordById(@PathVariable("keywordId") UUID keywordId) {
         Keyword keyword = keywordService.getKeywordById(keywordId);
         return new ResponseEntity<>(keyword, HttpStatus.OK);
     }
 
-    @DeleteMapping(value = URL_PATHS.API_START_DELETION_KEYWORD_BY_ID)
+    @DeleteMapping(value = URL_PATH.API_START_DELETION_KEYWORD_BY_ID)
     public ResponseEntity deleteKeywordById(@PathVariable("keywordId") UUID keywordId) {
         keywordService.deleteKeywordById(keywordId);
         return new ResponseEntity<>(HttpStatus.OK);
