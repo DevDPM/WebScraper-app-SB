@@ -16,6 +16,7 @@ import java.util.UUID;
 public class PhoneNumber extends BaseEntity {
 
     private String phoneNumber;
+    private boolean isTrustworthy;
     private String numberOfHits;
 
     @JsonBackReference

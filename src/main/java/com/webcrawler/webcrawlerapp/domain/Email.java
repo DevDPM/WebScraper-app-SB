@@ -16,6 +16,7 @@ import java.util.UUID;
 public class Email extends BaseEntity{
 
     private String email;
+    private boolean isTrustworthy;
     private String numberOfHits;
 
     @JsonBackReference

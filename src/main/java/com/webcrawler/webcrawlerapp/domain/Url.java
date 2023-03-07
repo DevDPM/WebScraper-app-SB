@@ -19,6 +19,7 @@ public class Url extends BaseEntity{
     private String parentUrl;
     private String title;
     private String numberOfChildUrl;
+    private PageHealth pageHealth;
 
     @JsonBackReference
     @ManyToOne
