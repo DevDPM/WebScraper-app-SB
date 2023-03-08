@@ -1,4 +1,4 @@
-package com.webcrawler.webcrawlerapp.utils.searchEngines;
+package com.webcrawler.webcrawlerapp.service.crawler.searchEngines;
 
 import java.util.List;
 import java.util.Set;

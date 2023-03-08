@@ -8,11 +8,11 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class SettingServiceImpl implements SettingService {
+public class SettingsServiceImpl implements SettingsService {
 
     private final SettingsRepository settingsRepository;
 
-    public SettingServiceImpl(SettingsRepository settingsRepository) {
+    public SettingsServiceImpl(SettingsRepository settingsRepository) {
         this.settingsRepository = settingsRepository;
     }
 

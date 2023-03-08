@@ -1,23 +1,25 @@
-package com.webcrawler.webcrawlerapp.utils;
+package com.webcrawler.webcrawlerapp.service.crawler;
 
 import com.webcrawler.webcrawlerapp.domain.Email;
 import com.webcrawler.webcrawlerapp.domain.KeywordProgression;
 import com.webcrawler.webcrawlerapp.domain.PhoneNumber;
 import com.webcrawler.webcrawlerapp.domain.Url;
-import com.webcrawler.webcrawlerapp.service.KeywordProgressionService;
+import com.webcrawler.webcrawlerapp.utils.Element;
+import com.webcrawler.webcrawlerapp.utils.WebDocument;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
-import java.util.concurrent.Callable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static com.webcrawler.webcrawlerapp.utils.Element.*;
 
-public class HttpSearchScraping {
+@Service
+public class CrawlHttpServiceImpl implements CrawlHttpService {
 
     private KeywordProgression keywordProgression;
     private boolean findEmail = false;
@@ -40,11 +42,7 @@ public class HttpSearchScraping {
             "06", "+31", "020", "085", "0343", "0299"
     };
 
-
-    public HttpSearchScraping(KeywordProgression kp) {
-        this.keywordProgression = kp;
-    }
-
+    @Override
     public boolean setUrls(Set<String> urls) {
         if (urls == null || urls.isEmpty())
             return false;
@@ -53,9 +51,8 @@ public class HttpSearchScraping {
         return true;
     }
 
-
+    @Override
     public List<Url> start() {
-
         Set<String> parentUrls = getUrlsToHttpCrawl();
         if (parentUrls == null || parentUrls.isEmpty()) {
             throw new RuntimeException("No urls to crawl");
@@ -83,9 +80,9 @@ public class HttpSearchScraping {
             Element.setWebDocument(document);
 
             // find all childUrls in parentUrl
-            List<String> foundChildUrls = getElementListFromElementHTML(Tag.HYPER_LINK, Tag.HTML)
+            List<String> foundChildUrls = getElementListFromElementHTML(Element.Tag.HYPER_LINK, Element.Tag.HTML)
                     .stream()
-                    .filter(e -> containAttribute(Attribute.HREF, e))
+                    .filter(e -> containAttribute(Element.Attribute.HREF, e))
                     .map(e -> {
                         return getAttributeContent(Attribute.HREF, e);
                     }).collect(Collectors.toList());
@@ -170,6 +167,56 @@ public class HttpSearchScraping {
         keywordProgression.setEstimatedTime("0 sec.");
 
         return urlResultList;
+    }
+
+    @Override
+    public Map<String, Integer> getTelephones() {
+        return telephones;
+    }
+
+    @Override
+    public Map<String, Integer> getEmails() {
+        return emails;
+    }
+
+    @Override
+    public void setFindTelephone(boolean findTelephone) {
+        this.findTelephone = findTelephone;
+    }
+
+    @Override
+    public boolean isFindTelephone() {
+        return findTelephone;
+    }
+
+    @Override
+    public void setFindEmail(boolean findEmail) {
+        this.findEmail = findEmail;
+    }
+
+    @Override
+    public boolean isFindEmail() {
+        return findEmail;
+    }
+
+    @Override
+    public Set<String> getUrlsToHttpCrawl() {
+        return urlsToHttpCrawl;
+    }
+
+    @Override
+    public void setUrlResultList(List<Url> urlResultList) {
+        this.urlResultList = urlResultList;
+    }
+
+    @Override
+    public List<Url> getUrlResultList() {
+        return urlResultList;
+    }
+
+    @Override
+    public void setKeywordProgression(KeywordProgression keywordProgression) {
+        this.keywordProgression = keywordProgression;
     }
 
     private long getEstimatedTimeLeft(long startTime, long currentTime, double percentageDone) {
@@ -343,45 +390,5 @@ public class HttpSearchScraping {
 
 
         return url.substring(startDomain, endDomain);
-    }
-
-    public void setKeywordProgression(KeywordProgression keywordProgression) {
-        this.keywordProgression = keywordProgression;
-    }
-
-    public List<Url> getUrlResultList() {
-        return urlResultList;
-    }
-
-    public void setUrlResultList(List<Url> urlResultList) {
-        this.urlResultList = urlResultList;
-    }
-
-    public Set<String> getUrlsToHttpCrawl() {
-        return urlsToHttpCrawl;
-    }
-
-    private boolean isFindEmail() {
-        return findEmail;
-    }
-
-    public void setFindEmail(boolean findEmail) {
-        this.findEmail = findEmail;
-    }
-
-    private boolean isFindTelephone() {
-        return findTelephone;
-    }
-
-    public void setFindTelephone(boolean findTelephone) {
-        this.findTelephone = findTelephone;
-    }
-
-    public Map<String, Integer> getEmails() {
-        return emails;
-    }
-
-    public Map<String, Integer> getTelephones() {
-        return telephones;
     }
 }

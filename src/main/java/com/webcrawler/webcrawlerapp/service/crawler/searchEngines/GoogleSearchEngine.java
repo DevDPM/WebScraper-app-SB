@@ -1,16 +1,18 @@
-package com.webcrawler.webcrawlerapp.utils.searchEngines;
+package com.webcrawler.webcrawlerapp.service.crawler.searchEngines;
 
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class BingSearchEngine implements SearchEngine{
+public class GoogleSearchEngine implements SearchEngine {
+
+
     @Override
     public String getSearchUrl(String keyword, int numberOfHttpPages) {
-        String googleUrl = "https://www.bing.nl" +
+        String googleUrl = "https://www.google.nl" +
                 "/search?q=" +
                 keyword +
-                "&count=" +
+                "&num=" +
                 numberOfHttpPages;
         return googleUrl;
     }

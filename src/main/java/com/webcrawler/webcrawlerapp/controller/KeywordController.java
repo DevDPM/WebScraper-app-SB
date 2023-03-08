@@ -1,10 +1,8 @@
 package com.webcrawler.webcrawlerapp.controller;
 
 import com.webcrawler.webcrawlerapp.domain.Keyword;
-import com.webcrawler.webcrawlerapp.domain.Settings;
-import com.webcrawler.webcrawlerapp.service.CrawlBotCallableService;
+import com.webcrawler.webcrawlerapp.service.CrawlService;
 import com.webcrawler.webcrawlerapp.service.KeywordService;
-import com.webcrawler.webcrawlerapp.service.SettingService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,25 +19,22 @@ import java.util.concurrent.Future;
 @AllArgsConstructor
 @RestController
 public class KeywordController {
+    private final CrawlService crawlService;
     private final KeywordService keywordService;
-    private final SettingService settingService;
-    private final CrawlBotCallableService crawlBotCallableService;
 
     @PostMapping(value = URL_PATH.API_START_CRAWLING)
     public ResponseEntity handlePost(@RequestBody Keyword keyword) throws InterruptedException, ExecutionException {
 
-        Settings settings = settingService.getSetting();
-        crawlBotCallableService.setBingSearch(settings.isBingSearch());
-        crawlBotCallableService.setGoogleSearch(settings.isGoogleSearch());
-        crawlBotCallableService.setFindNumberOfPages(settings.getNumberOfPages());
-        crawlBotCallableService.setKeyword(keyword);
+        Keyword newKeyword = new Keyword();
+        newKeyword.setKeyword(keyword.getKeyword());
 
         System.out.println("task started");
         System.out.println(keyword.getKeyword());
 
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         Future<ResponseEntity> returnedValues = executorService.submit(() -> {
-            return crawlBotCallableService.call();
+            crawlService.setKeyword(newKeyword);
+            return crawlService.call();
         });
 
         int minutes = 0;

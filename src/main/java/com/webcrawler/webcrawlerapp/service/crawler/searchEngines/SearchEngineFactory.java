@@ -1,9 +1,10 @@
-package com.webcrawler.webcrawlerapp.utils.searchEngines;
+package com.webcrawler.webcrawlerapp.service.crawler.searchEngines;
 
-import com.webcrawler.webcrawlerapp.utils.WebSearchScraping;
+import com.webcrawler.webcrawlerapp.service.crawler.CrawlSearchEngineServiceImpl;
+
 
 public class SearchEngineFactory {
-    public SearchEngine getSearchEngine(WebSearchScraping.Engine engine) {
+    public SearchEngine getSearchEngine(CrawlSearchEngineServiceImpl.Engine engine) {
         if (engine == null)
             return null;
 

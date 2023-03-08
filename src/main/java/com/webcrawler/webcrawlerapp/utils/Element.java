@@ -180,7 +180,7 @@ public final class Element {
      *  Tag ENUM's will be used to get Elements
      *  from the truncated HTML String */
 
-    enum Tag {
+    public enum Tag {
         HTML("html", true),
         HEADER("header", false),
         BODY("body", true),
@@ -240,7 +240,7 @@ public final class Element {
      *  HTML Tags and will be used to check if
      *  the attributes is present or get it's content */
 
-    enum Attribute {
+    public enum Attribute {
         HREF("href=", " ");
 
         private final String startAttribute;
