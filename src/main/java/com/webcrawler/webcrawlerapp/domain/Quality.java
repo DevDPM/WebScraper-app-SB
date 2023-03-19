@@ -1,5 +1,5 @@
 package com.webcrawler.webcrawlerapp.domain;
 
-public enum PageHealth {
+public enum Quality {
     BAD, AVERAGE, GOOD
 }

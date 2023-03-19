@@ -1,54 +1,61 @@
 package com.webcrawler.webcrawlerapp.controller;
 
-import com.webcrawler.webcrawlerapp.domain.Keyword;
-import com.webcrawler.webcrawlerapp.service.CrawlService;
+import com.webcrawler.webcrawlerapp.domain.*;
+import com.webcrawler.webcrawlerapp.service.ioManager;
+import com.webcrawler.webcrawlerapp.service.KeywordProgressionService;
 import com.webcrawler.webcrawlerapp.service.KeywordService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.UUID;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.*;
 
 @CrossOrigin(origins = "http://localhost:4200") // Angular frontend
 @AllArgsConstructor
 @RestController
 public class KeywordController {
-    private final CrawlService crawlService;
+    private final KeywordProgressionService keywordProgressionService;
     private final KeywordService keywordService;
+    private final ioManager ioManager;
 
     @PostMapping(value = URL_PATH.API_START_CRAWLING)
-    public ResponseEntity handlePost(@RequestBody Keyword keyword) throws InterruptedException, ExecutionException {
+    public ResponseEntity handlePost(@RequestBody Keyword crawlKeyword) {
 
-        Keyword newKeyword = new Keyword();
-        newKeyword.setKeyword(keyword.getKeyword());
+        Keyword keyword = new Keyword();
+        keyword.setKeyword(crawlKeyword.getKeyword());
+        keyword.setBingSearch(crawlKeyword.isBingSearch());
+        keyword.setGoogleSearch(crawlKeyword.isGoogleSearch());
+        keyword.setYahooSearch(crawlKeyword.isYahooSearch());
+        keyword.setScrapeEmail(crawlKeyword.isScrapeEmail());
+        keyword.setScrapePhoneNumber(crawlKeyword.isScrapePhoneNumber());
+        keyword.setNumberOfPages(crawlKeyword.getNumberOfPages());
+        Keyword savingKeyword = keywordService.saveNeworUpdateKeyword(keyword);
+        System.out.println("getKeyword : " + savingKeyword.getKeyword() + " " + savingKeyword.getId());
+        System.out.println("isBingSearch : " + savingKeyword.isBingSearch() + " " + savingKeyword.getId());
+        System.out.println("isGoogleSearch : " + savingKeyword.isGoogleSearch() + " " + savingKeyword.getId());
+        System.out.println("isScrapeEmail : " + savingKeyword.isScrapeEmail() + " " + savingKeyword.getId());
+        System.out.println("isYahooSearch : " + savingKeyword.isYahooSearch() + " " + savingKeyword.getId());
+        System.out.println("isScrapePhoneNumber : " + savingKeyword.isScrapePhoneNumber() + " " + savingKeyword.getId());
+        System.out.println("getNumberOfPages : " + savingKeyword.getNumberOfPages() + " " + savingKeyword.getId());
 
-        System.out.println("task started");
-        System.out.println(keyword.getKeyword());
+        KeywordProgression tracker = new KeywordProgression();
 
-        ExecutorService executorService = Executors.newSingleThreadExecutor();
-        Future<ResponseEntity> returnedValues = executorService.submit(() -> {
-            crawlService.setKeyword(newKeyword);
-            return crawlService.call();
+        ioManager.scrapeRootDomainUrlFromSearchEngine(keyword);
+        ioManager.scrapeRootDomainHttp(keyword);
+
+        Keyword savedKeyword = keywordService.getKeywordById(keyword.getId());
+
+        System.out.println("saved" + savedKeyword.getKeyword() + savedKeyword.getId());
+
+        savedKeyword.getUrls().forEach(e -> {
+            e.getEmailSet().forEach(System.out::println);
+            e.getPhoneNumberSet().forEach(System.out::println);
         });
 
-        int minutes = 0;
-        while(!returnedValues.isDone()) {
-            System.out.println("time waiting: " + minutes + " minutes.");
-            minutes++;
-            Thread.sleep(60000);
-        }
+        List<KeywordProgression> progressList = keywordProgressionService.GetAllKeywordProgression();
 
-//        returnedValues.wait();
-
-        ResponseEntity response = returnedValues.get();
-
-        return response;
+        return new ResponseEntity<>(progressList, HttpStatus.OK);
     }
 
     @GetMapping(value = {URL_PATH.API})

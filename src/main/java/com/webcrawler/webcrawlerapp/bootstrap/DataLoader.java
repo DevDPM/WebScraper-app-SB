@@ -17,7 +17,7 @@ public class DataLoader implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        dataToLoad();
+//        dataToLoad();
     }
 
     private void dataToLoad() {
@@ -25,6 +25,7 @@ public class DataLoader implements CommandLineRunner {
         Settings settings = new Settings();
         settings.setGoogleSearch(true);
         settings.setBingSearch(true);
+        settings.setYahooSearch(true);
         settings.setNumberOfPages(10);
         settingsRepository.save(settings);
 

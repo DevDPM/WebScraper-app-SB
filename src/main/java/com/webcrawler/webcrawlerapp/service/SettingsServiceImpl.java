@@ -18,22 +18,15 @@ public class SettingsServiceImpl implements SettingsService {
 
     @Override
     public Settings updateSetting(Settings settings) {
-        Optional<Settings> updatedSetting = getAllSettings()
-                .stream()
-                .findFirst()
-//                .filter(targetSetting -> { targetSetting
-//                    return targetSetting.getId().equals(settings.getId());
-//                })
-                .map(updateSetting -> {
+        Settings updateSetting = getSetting();
                     updateSetting.setNumberOfPages(settings.getNumberOfPages());
                     updateSetting.setBingSearch(settings.isBingSearch());
+                    updateSetting.setYahooSearch(settings.isYahooSearch());
                     updateSetting.setGoogleSearch(settings.isGoogleSearch());
-                    return updateSetting;
-                });
+                    updateSetting.setScrapeEmail(settings.isScrapeEmail());
+                    updateSetting.setScrapePhoneNumber(settings.isScrapePhoneNumber());
 
-        return updatedSetting.map(saveSetting -> {
-            return settingsRepository.save(saveSetting);
-        }).orElse(null);
+            return settingsRepository.save(updateSetting);
     }
 
     @Override

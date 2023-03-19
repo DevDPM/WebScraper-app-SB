@@ -31,7 +31,7 @@ public class KeywordServiceImpl implements KeywordService {
     }
 
     @Override
-    public Keyword saveNewKeyword(Keyword newKeyword) {
+    public Keyword saveNeworUpdateKeyword(Keyword newKeyword) {
         return keywordRepository.save(newKeyword);
     }
 

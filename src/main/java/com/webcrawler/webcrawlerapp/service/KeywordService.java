@@ -9,7 +9,8 @@ public interface KeywordService {
     List<Keyword> listKeywords(String keyword);
     Keyword getKeywordById(UUID id);
 
-    Keyword saveNewKeyword(Keyword newKeyword);
+    Keyword saveNeworUpdateKeyword(Keyword keyword);
 
     void deleteKeywordById(UUID keywordId);
+
 }
